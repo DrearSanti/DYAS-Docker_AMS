@@ -1,0 +1,20 @@
+services:
+  web:
+    image: santiesco/friendlyhello:0.1.0
+    # La imagen de Santiago solo existe para amd64; en un Mac con Apple Silicon corre emulada
+    platform: linux/amd64
+    ports:
+      - "4000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+  redis:
+    image: redis:8.8
+    command: redis-server --appendonly yes
+    volumes:
+      - ./data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
